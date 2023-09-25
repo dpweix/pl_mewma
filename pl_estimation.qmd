@@ -1,0 +1,91 @@
+---
+title: "PL Estimation Techniques"
+author: "Derek Weix"
+date: last-modified
+date-format: long
+number-sections: true
+
+mainfont: Palatino
+sansfont: Palatino
+
+toc: TRUE
+toc-location: left
+
+format: 
+  html:
+    number-sections: false
+  
+bibliography: "spm.bib"
+
+knitr:
+  opts_chunk: 
+    warning: false
+    message: false
+
+editor: source
+---
+
+## Introduction
+
+This document is for use in exploring coding options for PL estimation in the hope of developing a MSPM technique that can use a PLR test to its full potential. Initially we install the required packages.
+
+```{r}
+library("tidyverse")
+library("mvtnorm")
+library("glmnet")
+set.seed(123)
+```
+
+## @zou_multivariate_2009
+
+They're interested in the problem $H_0: {\boldsymbol \mu} = \mathbf{0}$ versus $H_1: \boldsymbol{\mu} \neq \mathbf{0}$. They consider the following penalized likelihood function
+$$
+PL(\boldsymbol{\mu}) = n(\bar{\bf{X}}-\boldsymbol{\mu})'\boldsymbol{\Sigma}^{-1}(\bar{\bf{X}}-\boldsymbol{\mu}) + n\gamma\sum_{j=1}^p \frac{1}{|\bar{\bf{X}}^{(j)}|^a}|\boldsymbol{\mu}^{(j)}|
+$$
+The ALASSO estimator of $\boldsymbol{\mu}$ is
+$$
+\hat{\boldsymbol{\mu}}_\gamma = \text{arg min} PL(\boldsymbol{\mu}).
+$$
+This process is demonstrated below for $\boldsymbol \mu = (0.4, 0.05, 0.3)'$, $\boldsymbol{\Sigma} = I_3$, and $\gamma = 0.05$.
+
+```{r}
+# MSPM using LASSO (Zou and Qiu, 2009) ------------------------------------
+# Parameters
+p           <- 3
+n_ic        <- 1000
+mu_0        <- rep(0, p)
+mu_1        <- c(.4, .05, .3)
+sigma_0     <- diag(p)
+sigma_0_inv <- solve(sigma_0)
+gamma       <- .05
+
+# Data generation
+X <- rmvnorm(n_ic, mu_1, sigma_0)
+
+# Basic Penalized Likelihood approach
+pl <- function(mu_0, X, sigma_0_inv, gamma) {
+  n <- nrow(X)
+  
+  (n*t(colMeans(X)-mu_0) %*% sigma_0_inv %*% (colMeans(X)-mu_0) +
+      n*gamma*sum(abs(mu_0/colMeans(X))))
+}
+
+mu_hat <- 
+  optim(mu_0, pl, X = X, sigma_0_inv = sigma_0_inv, gamma = gamma,
+        lower = 0, upper = 1,
+        method = "L-BFGS-B")$par
+
+mu_1
+mu_hat
+```
+
+Then the authors define their LASSO based test statistic as 
+$$
+\tilde{T}_\gamma = \frac{n(\hat{\boldsymbol{\mu}}_\gamma'\boldsymbol{\Sigma}^{-1}\bar{\bf{X}})^2}{\hat{\boldsymbol{\mu}}_\gamma'\boldsymbol{\Sigma}^{-1}\hat{\boldsymbol{\mu}}_\gamma},
+$$
+in the case where $\hat{\boldsymbol{\mu}}_\gamma \neq \bf{0}$ and $\tilde{T}_\gamma$ is a negative number otherwise.
+
+```{r}
+# LASSO Approach
+#glmnet(X)
+```
