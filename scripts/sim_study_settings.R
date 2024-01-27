@@ -37,12 +37,14 @@ method_params <- list(
 # p =  3: n_w = 30,  60
 # p = 10: n_w = 60, 120
 
-data_folder <- "data4"
+data_folder <- "data6"
 
-method <- "MAC_COMET"
+#methods <- "hawkins"
+methods <- c("hawkins", "MC_COMET", "MAC_COMET")
+#methods <- c("wang_1", "wang_2", "MC_LASSO")
 selected_method <- method_params[[method]]
 
 n <- 1000
 arl_ic <- 180
 i_min <- 1
-i_max <- 20
+i_max <- 5

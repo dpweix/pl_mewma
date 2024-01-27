@@ -12,12 +12,19 @@ for(scenario in names(scenario_params)) {
     i <<- i
     for(arg in scenario_params[[scenario]]) {
       arg <<- arg
-      rstudioapi::jobRunScript(path = here("scripts", "sim_study_single_run.R"),
-                               name = paste0(scenario, "-", method, "-", arg, "-", i),
-                               importEnv = TRUE)
+      
+      for(m in methods) {
+        method <<- m
+        rstudioapi::jobRunScript(path = here("scripts", "sim_study_single_run.R"),
+                                 name = paste0(scenario, "-", method, "-", arg, "-", i),
+                                 importEnv = TRUE)
+      }
+
     }
     
-    files_to_save <- paste0(scenario, "-", method, "-", scenario_params[[scenario]], "-", i, ".rds")
+    files_to_save <- map(methods, \(m) {
+      paste0(scenario, "-", m, "-", scenario_params[[scenario]], "-", i, ".rds")}) |> 
+      unlist()
     files_saved <- FALSE
     
     while(!files_saved) {
