@@ -3,41 +3,46 @@ a   <- c(0, .3, 1, 2)
 b   <- c(1, 1.3, 1.8, 2.5)
 rho <- c(0, .2, .4, .6)
 
-alpha <- c(0.05, 0.1, 0.2)
-beta  <- alpha
+#alpha <- c(0.05, 0.1, 0.2)
+#beta  <- alpha
 
 scenario_params <- list(s1 = a,
-                        s2 = b)#,
-                        # s3 = rho,
-                        # s4 = b,
-                        # s5 = b,
-                        # s6 = a,
-                        # s7 = b,
-                        # s8 = rho,
-                        # s9 = a,
-                        # s10 = b)
+                        s2 = b,
+                        s3 = rho,
+                        s4 = b,
+                        s5 = b,
+                        s6 = a,
+                        s7 = b,
+                        s8 = rho,
+                        s9 = a,
+                        s10 = b)
+
 method_params <- list(
-  hawkins = list(method = "hawkins",    beta = .2),
-  wang_1  = list(method = "wang_1",    alpha = .2,     beta = .2, lambda_1 = .2, lambda_2 = .2),
-  wang_2  = list(method = "wang_2",    alpha = .2,     beta = .2, lambda_1 = .2, lambda_2 = .2),
-  test_1  = list(method = "MC_LASSO",   beta = .2, lambda_s = .2),
-  test_2  = list(method = "MC_COMET",   beta = .2,   cutoff = .1, n_w = 60),
-  test_3  = list(method = "MAC_COMET", alpha = .2,     beta = .2, cutoff = .1, n_w = 60)
+  hawkins   = list(method = "hawkins",    beta = .1),
+  wang_1    = list(method = "wang_1",    alpha = .1,     beta = .1, lambda_1 = .2, lambda_2 = .2),
+  wang_2    = list(method = "wang_2",    alpha = .1,     beta = .1, lambda_1 = .2, lambda_2 = .2),
+  MC_LASSO  = list(method = "MC_LASSO",   beta = .1, lambda_s = .2),
+  MC_COMET  = list(method = "MC_COMET",   beta = .1,   cutoff = .1, n_w = c(30, 275)),
+  MAC_COMET = list(method = "MAC_COMET", alpha = .1,     beta = .1, cutoff = .1, n_w = c(30, 275))
+  #MAC_COMET1= list(method ="MAC_COMET1", alpha = .2,     beta = .2, cutoff = .1, n_w = 60)
 )
 
 # data1 is testing methods with new names
-# data2 is testing methods with variable alpha, beta
-# data3 is testing methods with variable alpha, beta, and n_w (short long) 
+# data2 is testing methods with alpha, beta = .1 and n_w = 275, arl = 180
+# data3 is testing methods with alpha, beta = .01 for Wang and .1 fro COMET, n_w = 165, arl = 180
+# data4 is data3 bu n_w = 18 for s1:5 and 165 for s6:10
+# data5 is bootstrapped h estimation
+# data6 is get_arl_ic for case of IC ARL estimation
 
 # p =  3: n_w = 30,  60
 # p = 10: n_w = 60, 120
 
-data_folder <- "data1"
+data_folder <- "data4"
 
-method <- "wang_2"
+method <- "MAC_COMET"
 selected_method <- method_params[[method]]
 
 n <- 1000
-arl_ic <- 200
+arl_ic <- 180
 i_min <- 1
 i_max <- 20

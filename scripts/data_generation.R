@@ -34,6 +34,19 @@ sigma_2 <- function(b = 1, rho = .2) {
            0, 0, 0, 0, 0, 0, 0, 0, 0, 1), ncol = 10, byrow = TRUE)
 }
 
+# sigma_2 <- function(b = 1, rho = .2) {
+#   matrix(c(b, b*rho, b*rho, b*rho, 0, 0, 0, 0, 0, 0,
+#            b*rho, b, b*rho, b*rho, 0, 0, 0, 0, 0, 0,
+#            b*rho, b*rho, b, b*rho, 0, 0, 0, 0, 0, 0,
+#            b*rho, b*rho, b*rho, b, 0, 0, 0, 0, 0, 0,
+#            0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+#            0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+#            0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+#            0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+#            0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+#            0, 0, 0, 0, 0, 0, 0, 0, 0, 1), ncol = 10, byrow = TRUE)
+# }
+
 sigma_3 <- function(rho = .2) {
   matrix(c(1    , rho  , rho^2, rho^3, rho^4, rho^5, rho^6, rho^7, rho^8, rho^9,
            rho  , 1    , rho  , rho^2, rho^3, rho^4, rho^5, rho^6, rho^7, rho^8,
@@ -81,8 +94,8 @@ gen_dat_s2 <- function(n, b, data_only = TRUE) {
 
 gen_dat_s3 <- function(n, rho, data_only = TRUE) {
   df <- 
-    bind_rows(IC = rmvnorm(n, mean = rep(0, 3), sigma = sigma_1( .2)) |> format_matrix(),
-              OC = rmvnorm(n, mean = rep(0, 3), sigma = sigma_1(rho)) |> format_matrix(),
+    bind_rows(IC = rmvnorm(n, mean = rep(0, 3), sigma = sigma_1(rho_0)) |> format_matrix(),
+              OC = rmvnorm(n, mean = rep(0, 3), sigma = sigma_1(rho  )) |> format_matrix(),
               .id = "type") |> 
       mutate(index = 1:n(), .before = "x1")
   
@@ -95,8 +108,8 @@ gen_dat_s3 <- function(n, rho, data_only = TRUE) {
 
 gen_dat_s4 <- function(n, b, data_only = TRUE) {
   df <- 
-    bind_rows(IC = rmvnorm(n, mean = rep(0, 3), sigma =   sigma_1(.2)) |> format_matrix(),
-              OC = rmvnorm(n, mean = rep(0, 3), sigma = b*sigma_1(.2)) |> format_matrix(),
+    bind_rows(IC = rmvnorm(n, mean = rep(0, 3), sigma =   sigma_1(rho_0)) |> format_matrix(),
+              OC = rmvnorm(n, mean = rep(0, 3), sigma = b*sigma_1(rho_0)) |> format_matrix(),
               .id = "type") |> 
       mutate(index = 1:n(), .before = "x1")
   
@@ -109,10 +122,10 @@ gen_dat_s4 <- function(n, b, data_only = TRUE) {
 
 gen_dat_s5 <- function(n, b, n_drift = 100, data_only = TRUE) {
   df <- 
-    bind_rows(IC = rmvnorm(n, mean = rep(0, 3), sigma =   sigma_1(.2)) |> format_matrix(),
+    bind_rows(IC = rmvnorm(n, mean = rep(0, 3), sigma =   sigma_1(rho_0)) |> format_matrix(),
               OC = bind_rows(map_dfr(seq(1, b, length.out = n_drift + 1)[-1], \(b_d) {
-                    rmvnorm(1          , mean = rep(0, 3), sigma = b_d*sigma_1(.2)) |> format_matrix()}),
-                    rmvnorm(n - n_drift, mean = rep(0, 3), sigma =   b*sigma_1(.2)) |> format_matrix()
+                    rmvnorm(1          , mean = rep(0, 3), sigma = b_d*sigma_1(rho_0)) |> format_matrix()}),
+                    rmvnorm(n - n_drift, mean = rep(0, 3), sigma =   b*sigma_1(rho_0)) |> format_matrix()
                     ),
               .id = "type") |> 
       mutate(index = 1:n(), .before = "x1")
@@ -140,8 +153,8 @@ gen_dat_s6 <- function(n, a, data_only = TRUE) {
 
 gen_dat_s7 <- function(n, b, data_only = TRUE) {
   df <- 
-    bind_rows(IC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_2(b = 1, rho = .2)) |> format_matrix(),
-              OC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_2(b = b, rho = .2)) |> format_matrix(),
+    bind_rows(IC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_2(b = 1, rho = rho_0)) |> format_matrix(),
+              OC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_2(b = b, rho = rho_0)) |> format_matrix(),
               .id = "type") |> 
       mutate(index = 1:n(), .before = "x1")
   
@@ -154,8 +167,8 @@ gen_dat_s7 <- function(n, b, data_only = TRUE) {
 
 gen_dat_s8 <- function(n, rho, data_only = TRUE) {
   df <- 
-    bind_rows(IC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_3(rho = .2)) |> format_matrix(),
-              OC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_3(rho = rho)) |> format_matrix(),
+    bind_rows(IC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_3(rho = rho_0)) |> format_matrix(),
+              OC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_3(rho = rho  )) |> format_matrix(),
               .id = "type") |> 
       mutate(index = 1:n(), .before = "x1")
   
@@ -182,8 +195,8 @@ gen_dat_s9 <- function(n, a, data_only = TRUE) {
 
 gen_dat_s10 <- function(n, b, data_only = TRUE) {
   df <- 
-    bind_rows(IC = rmst(n, xi = rep(0, 10), Omega = sigma_2(b = 1, rho = .2), alpha = rep(0, 10), nu = 40) |> format_matrix(),
-              OC = rmst(n, xi = rep(0, 10), Omega = sigma_2(b = b, rho = .2), alpha = rep(0, 10), nu = 40) |> format_matrix(),
+    bind_rows(IC = rmst(n, xi = rep(0, 10), Omega = sigma_2(b = 1, rho = rho_0), alpha = rep(0, 10), nu = 40) |> format_matrix(),
+              OC = rmst(n, xi = rep(0, 10), Omega = sigma_2(b = b, rho = rho_0), alpha = rep(0, 10), nu = 40) |> format_matrix(),
               .id = "type") |> 
       mutate(index = 1:n(), .before = "x1")
   

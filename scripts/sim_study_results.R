@@ -27,9 +27,8 @@ df_arl <- df_rl |>
   mutate(scenario = as_factor(scenario),
          method = case_match(method,
                              "hawkins" ~ "Hawkins", 
-                             "test_1" ~ "MC_LASSO",
-                             "test_2" ~ "MC_COMET",
-                             "test_3" ~ "MAC_COMET",
+                             "wang_1" ~ "Wang_1",
+                             "wang_2" ~ "Wang_2",
                              .default = method) |> as_factor()) |>
   group_by(scenario, method, param) |> 
   summarize(ARL = mean(rl),
@@ -67,8 +66,10 @@ df_arl |>
   geom_line() +
   facet_wrap(~ scenario, scales = "free", nrow = 2, ncol = 5, labeller = scenario_labels) +
   scale_x_continuous(n.breaks = 6) +
+  scale_y_continuous(limits = c(0, 200)) +
   labs(color = "", linetype = "", x = "", title = "ARL Values by Scenario, Method, and Parameter")
 
+ggsave(here("figures", "arl-results4.pdf"), width = 4000, height = 1000, units = "px", device = cairo_pdf)
 ggsave(here("figures", "arl-results.pdf"), width = 4000, height = 2000, units = "px", device = cairo_pdf)
 
 df_rl |> 

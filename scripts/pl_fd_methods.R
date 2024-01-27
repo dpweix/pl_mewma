@@ -25,7 +25,7 @@ wang_2014_1 <- function(dat, mu_0, sigma_0,
                         alpha = .2, beta = .2,
                         lambda_1 = .2, lambda_2 = .2) {
   X <- as.matrix(dat)
-  sig_inv <- solve(sigma_0)  
+  sig_inv <- solve(sigma_0)
   mu_t  <- mean_MEWMA(X, mu_0, alpha = alpha)
   mu_lt <- mean_SPARSE(mu_t, mu_0, sig_inv, pl_mu_1, lambda_1 = lambda_1)
   sigma_lt     <- cov_MEWMC(X, mu_lt, beta = beta)
@@ -89,10 +89,27 @@ MAC_COMET <- function(dat, mu_0, sigma_0,
   S_hat <- get_S_hat(threshold_S(S, cutoff = cutoff),
                      get_U_window(U, n_w = n_w),
                      U)
-  pstat_test_2(mu_t, mu_0, S_hat, solve(sigma_0))
   
+  pstat_test_2(mu_t, mu_0, S_hat, solve(sigma_0))
 }
 
+# Wang + COMET based sparse covariance estimation
+MAC_COMET1 <- function(dat, mu_0, sigma_0,
+                      alpha = .2, beta = .2, cutoff = .1, n_w = 50) {
+  A <- get_A(sigma_0)
+  X <- as.matrix(dat)
+  mu_t  <- mean_MEWMA(X, mu_0, alpha = alpha)
+  U <- calc_U(dat, mu_t, A)
+  S <- calc_S(U, sigma_0, beta)
+  S_hat <- get_S_hat(threshold_S(S, cutoff = cutoff),
+                     get_U_window(U, n_w = n_w),
+                     U)
+  
+  pstat <- pstat_test_3(lapply(seq_len(nrow(mu_t)), function(i) mu_t[i, ]),
+               mu_0,
+               S_hat,
+               solve(sigma_0))
+}
 # test_method_4 <- function(dat, mu_0, sigma_0, window_upper_limit,
 #                           alpha = .2, beta = .2, cutoff = .1,
 #                           n_min = 50, n_max = 100) {

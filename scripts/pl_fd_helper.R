@@ -34,6 +34,10 @@ demean = function(dat){ # Unexported method from mgcov (but necessary)
   return(datdm)
 }
 
+split_matrix <- function(X) {
+  lapply(seq_len(nrow(X)), function(i) X[i, ])
+}
+
 # Hawkins, Maboudou-Tchao Methods -----------------------------------------
 
 get_A <- function(sigma_0) {
@@ -121,15 +125,19 @@ pstat_test_2 <- function(mu_t, mu_0, S_hat, sig_inv) {
 }
 
 pstat_test_3 <- function(mu_t, mu_0, S_hat, sig_inv) {
-  T_1 <- apply(mu_t, 1, \(x) {t(x - mu_0) %*% sig_inv %*% (x - mu_0)})
+  # mu_t is a list
+  p <- length(mu_0)
   
-  map_dfr(S_hat, \(S) {
-    if(anyNA(S)) tibble(T_2 = NA,
-                        T_3 = NA)
-    else tibble(T_2 = sum(diag(S)),
-                T_3 = - log(det(S)))
-    
-  }) |> mutate(T_1 = T_1, .before = T_2)
+  map2_dfr(mu_t, S_hat, \(x, S) {
+    if(anyNA(S)) tibble(T_1 = NA,
+                        T_2 = NA,
+                        term_1 = NA,
+                        term_2 = NA)
+    else tibble(T_1 = t(x - mu_0) %*% solve(S) %*% (x - mu_0),
+                T_2 = - log(det(S)) - sum(diag(S %*% sig_inv)),
+                term_1 = - log(det(S)),
+                term_2 = - sum(diag(S %*% sig_inv)))
+  })
 }
 
 # Wang Methods ------------------------------------------------------------
@@ -141,6 +149,7 @@ mean_MEWMA <- function(dat, mu_0, alpha = .2) {
   for(i in 2:nrow(X)) {
     mu_t[i, ] <- alpha*X[i-1, ] + (1-alpha)*mu_t[i-1, ]
   }
+  
   mu_t
 }
 
