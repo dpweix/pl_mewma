@@ -49,8 +49,8 @@ if(method == "hawkins") {
   
 } else if(method == "MC_LASSO") {
   mu_0    <- colMeans(df[1:n, ])
-  sigma_0 <- spcov(cov(df[1:n, ]), cov(df[1:n, ]),
-                   lambda = selected_method$lambda_s, step.size = 100)$Sigma
+  sigma_0 <- cov(df[1:n, ])#spcov(cov(df[1:n, ]), cov(df[1:n, ]),
+                   #lambda = selected_method$lambda_s, step.size = 100)$Sigma
   
   pstat <- MC_LASSO(df, mu_0, sigma_0,
                     beta = selected_method$beta,
@@ -58,9 +58,10 @@ if(method == "hawkins") {
   
 } else if(method == "MC_COMET") {
   mu_0    <- colMeans(df[1:n, ])
-  S_0 <- cov(df[1:n, ])
-  S_0[(abs(S_0) < selected_method$cutoff)] <- 0
-  sigma_0 <- covchaud(S_0, as.matrix(df[1:n, ]))$mat
+  #S_0 <- cov(df[1:n, ])
+  #S_0[(abs(S_0) < selected_method$cutoff)] <- 0
+  #sigma_0 <- covchaud(S_0, as.matrix(df[1:n, ]))$mat
+  sigma_0 <- cov(df[1:n, ])
   
   pstat <- MC_COMET(df, mu_0, sigma_0,
                     beta = selected_method$beta,
@@ -71,9 +72,10 @@ if(method == "hawkins") {
   
 } else if(method == "MAC_COMET") {
   mu_0    <- colMeans(df[1:n, ])
-  S_0 <- cov(df[1:n, ])
-  S_0[(abs(S_0) < selected_method$cutoff)] <- 0
-  sigma_0 <- covchaud(S_0, as.matrix(df[1:n, ]))$mat
+  #S_0 <- cov(df[1:n, ])
+  #S_0[(abs(S_0) < selected_method$cutoff)] <- 0
+  #sigma_0 <- covchaud(S_0, as.matrix(df[1:n, ]))$mat
+  sigma_0 <- cov(df[1:n, ])
   
   pstat <- MAC_COMET(df, mu_0, sigma_0,
                      alpha = selected_method$alpha,
@@ -183,7 +185,7 @@ if(method %in% c("hawkins", "wang_1", "MC_LASSO", "MC_COMET")) {
   
   list(scenario = scenario,
        method = method,
-       pstat = tibble(T_1 = T_2, T_2 = T_2),
+       pstat = tibble(T_1 = T_1, T_2 = T_2),
        params_data = list(n = n, arl_ic = arl_ic),
        params_method = selected_method,
        h1 = h1,

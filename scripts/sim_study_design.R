@@ -15,6 +15,7 @@ for(scenario in names(scenario_params)) {
       
       for(m in methods) {
         method <<- m
+        selected_method <<- method_params[[method]]
         rstudioapi::jobRunScript(path = here("scripts", "sim_study_single_run.R"),
                                  name = paste0(scenario, "-", method, "-", arg, "-", i),
                                  importEnv = TRUE)

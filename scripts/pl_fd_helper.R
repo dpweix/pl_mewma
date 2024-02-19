@@ -12,6 +12,7 @@ get_rl_oc <- function(vec_pstat, h) {
 
 objective_function <- function(h, arl, vec_pstat) {
   abs(get_arl_ic(vec_pstat, h) - arl)
+  #abs(get_rl_oc(vec_pstat, h) - arl)
 }
 
 estimate_h <- function(vec_pstat, arl) {
@@ -124,19 +125,21 @@ pstat_test_2 <- function(mu_t, mu_0, S_hat, sig_inv) {
   }) |> mutate(T_1 = T_1, .before = T_2)
 }
 
-pstat_test_3 <- function(mu_t, mu_0, S_hat, sig_inv) {
+pstat_test_3 <- function(mu_t, mu_0, S_t, S_hat, sig_inv) {
   # mu_t is a list
   p <- length(mu_0)
   
-  map2_dfr(mu_t, S_hat, \(x, S) {
-    if(anyNA(S)) tibble(T_1 = NA,
+  pmap_dfr(list(x = mu_t, S_t = S_t, S_hat = S_hat), \(x, S_t, S_hat) {
+    if(anyNA(S_hat)) tibble(T_1 = NA,
                         T_2 = NA,
                         term_1 = NA,
                         term_2 = NA)
-    else tibble(T_1 = t(x - mu_0) %*% solve(S) %*% (x - mu_0),
-                T_2 = - log(det(S)) - sum(diag(S %*% sig_inv)),
-                term_1 = - log(det(S)),
-                term_2 = - sum(diag(S %*% sig_inv)))
+    else tibble(T_1 = t(x - mu_0) %*% solve(S_hat) %*% (x - mu_0),
+                T_2 = - log(sum(abs(S_hat))) - 
+                  sum(diag(S_t %*% solve(S_hat))) +
+                  sum(diag(sig_inv %*% S_t)),
+                term_1 = - log(det(S_hat)),
+                term_2 = - sum(diag(S_t %*% solve(S_hat))))
   })
 }
 

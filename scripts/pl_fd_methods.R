@@ -107,8 +107,11 @@ MAC_COMET1 <- function(dat, mu_0, sigma_0,
   
   pstat <- pstat_test_3(lapply(seq_len(nrow(mu_t)), function(i) mu_t[i, ]),
                mu_0,
+               S,
                S_hat,
                solve(sigma_0))
+  
+  
 }
 # test_method_4 <- function(dat, mu_0, sigma_0, window_upper_limit,
 #                           alpha = .2, beta = .2, cutoff = .1,

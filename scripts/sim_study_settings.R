@@ -10,9 +10,9 @@ scenario_params <- list(s1 = a,
                         s2 = b,
                         s3 = rho,
                         s4 = b,
-                        s5 = b,
-                        s6 = a,
-                        s7 = b,
+                        s5 = a,
+                        s6 = b,
+                        s7 = rho,
                         s8 = rho,
                         s9 = a,
                         s10 = b)
@@ -22,9 +22,9 @@ method_params <- list(
   wang_1    = list(method = "wang_1",    alpha = .1,     beta = .1, lambda_1 = .2, lambda_2 = .2),
   wang_2    = list(method = "wang_2",    alpha = .1,     beta = .1, lambda_1 = .2, lambda_2 = .2),
   MC_LASSO  = list(method = "MC_LASSO",   beta = .1, lambda_s = .2),
-  MC_COMET  = list(method = "MC_COMET",   beta = .1,   cutoff = .1, n_w = c(30, 275)),
-  MAC_COMET = list(method = "MAC_COMET", alpha = .1,     beta = .1, cutoff = .1, n_w = c(30, 275))
-  #MAC_COMET1= list(method ="MAC_COMET1", alpha = .2,     beta = .2, cutoff = .1, n_w = 60)
+  MC_COMET  = list(method = "MC_COMET",   beta = .1,   cutoff = .1, n_w = c(60, 60)),
+  MAC_COMET = list(method = "MAC_COMET", alpha = .1,     beta = .1, cutoff = .1, n_w = c(60, 60))
+  #MAC_COMET1= list(method ="MAC_COMET1", alpha = .1,     beta = .1, cutoff = .1, n_w = c(60, 60))
 )
 
 # data1 is testing methods with new names
@@ -33,18 +33,19 @@ method_params <- list(
 # data4 is data3 bu n_w = 18 for s1:5 and 165 for s6:10
 # data5 is bootstrapped h estimation
 # data6 is get_arl_ic for case of IC ARL estimation
+# data_test1 is n_w = 60 for both large/small
 
 # p =  3: n_w = 30,  60
 # p = 10: n_w = 60, 120
 
-data_folder <- "data6"
+data_folder <- "data"
 
-#methods <- "hawkins"
-methods <- c("hawkins", "MC_COMET", "MAC_COMET")
+methods <- "MAC_COMET"
+#methods <- c("hawkins", "wang_1", "wang_2")
 #methods <- c("wang_1", "wang_2", "MC_LASSO")
-selected_method <- method_params[[method]]
+#selected_method <- method_params[[methods]]
 
 n <- 1000
 arl_ic <- 180
 i_min <- 1
-i_max <- 5
+i_max <- 200

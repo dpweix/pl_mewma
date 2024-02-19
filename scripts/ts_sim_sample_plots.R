@@ -72,6 +72,7 @@ hawkins_s1 <- hawkins_2008(df_s1, colMeans(df_s1[1:n, ]), cov(df_s1[1:n, ]))
 mc_lasso_s1 <- MC_LASSO(df_s1, colMeans(df_s1[1:n, ]), cov(df_s1[1:n, ]))
 mc_comet_s1 <- MC_COMET(df_s1, colMeans(df_s1[1:n, ]), cov(df_s1[1:n, ]))
 mac_comet_s1 <- MAC_COMET(df_s1, colMeans(df_s1[1:n, ]), cov(df_s1[1:n, ]))
+mac_comet1_s1<- MAC_COMET1(df_s1, colMeans(df_s1[1:n, ]), cov(df_s1[1:n, ]))
 
 h_hawkins <- estimate_h_bootstrap(hawkins_s1$pstat[1:n], arl_ic)
 h_mc_lasso <- estimate_h_bootstrap(mc_lasso_s1$pstat[1:n], arl_ic)
