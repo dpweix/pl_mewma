@@ -6,16 +6,19 @@ rho <- c(0, .2, .4, .6)
 #alpha <- c(0.05, 0.1, 0.2)
 #beta  <- alpha
 
-scenario_params <- list(#s1 = a,
-                        #s2 = b,
-                        #s3 = rho,
-                        #s4 = b,
+scenario_params <- list(s1 = a,
+                        s2 = b,
+                        s3 = rho,
+                        s4 = b,
+                        s2 = b,
+                        s3 = rho,
+                        s4 = b,
                         s5 = a,
-                        s6 = b)
-                        #s7 = rho,
-                        #s8 = rho,
-                        #s9 = a,
-                        #s10 = b)
+                        s6 = b,
+                        s7 = rho,
+                        s8 = rho,
+                        s9 = a,
+                        s10 = b)
 
 method_params <- list(
   hawkins   = list(method = "hawkins",    beta = .1),
@@ -34,6 +37,7 @@ method_params <- list(
 # data5 is bootstrapped h estimation
 # data6 is get_arl_ic for case of IC ARL estimation
 # data_test1 is n_w = 60 for both large/small
+# data_test2 is n_w = 60 for both large/small FOR MAC_COMET/WANG_2 WITH ACCURATE T_1/T_2
 
 # p =  3: n_w = 30,  60
 # p = 10: n_w = 60, 120
@@ -41,11 +45,19 @@ method_params <- list(
 data_folder <- "data"
 
 #methods <- "MAC_COMET"
-methods <- c("hawkins", "MC_COMET", "MAC_COMET")
-#methods <- c("wang_1", "wang_2", "MC_LASSO")
+#methods <- c("hawkins", "MC_COMET", "MAC_COMET")
+methods <- c("wang_1", "wang_2", "MC_LASSO")
 #selected_method <- method_params[[methods]]
+
+# Missing 
+# hawkins: s5, s6, s7: 101-1000 (DONE)
+# wang_1: s1-4 and s8-10: 201-1000, s5-7: 101-1000 (RUNNING 201-1000)
+# wang_2: s1-10: 101-1000 (RUNNING 201-1000)
+# MC_LASSO: s1-4 and s8-10: 201-1000, s5-7: 101-1000 (RUNNING 201-1000)
+# MC_COMET: s5, s6, s7: 101-1000 (DONE)
+# MAC_COMET: s1-10: 101-1000 (RUNNING)
 
 n <- 1000
 arl_ic <- 180
-i_min <- 1
-i_max <- 100
+i_min <- 201
+i_max <- 1000

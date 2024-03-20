@@ -34,16 +34,17 @@ plot_scenario <- function(df, title = "", type = "color") {
   }
   
   plot + 
-    labs(title = title, color = "", x = "Observation Index", y = "") +
-    scale_color_viridis_d(begin = 0, end = .6)
+    labs(title = title, color = "", x = "", y = "") +
+    scale_color_viridis_d(begin = 0.05, end = .95, direction = -1)
 }
 
 
 # Data/method specifications ----------------------------------------------
 source(here("scripts", "sim_study_settings.R"))
-param_id <- 3
+param_id <- 4
 
 # Generate data -----------------------------------------------------------
+set.seed(123)
 df_s1 <-gen_dat_s1(n,   a[param_id])## |> plot_scenario()
 df_s2 <-gen_dat_s2(n,   b[param_id])## |> plot_scenario()
 df_s3 <-gen_dat_s3(n, rho[param_id])## |> plot_scenario()
@@ -56,9 +57,9 @@ df_s9 <-gen_dat_s9(n,   a[param_id])## |> plot_scenario()
 df_s10<-gen_dat_s10(n,  b[param_id])## |> plot_scenario()
 
 # TS Plot of scenarios ----------------------------------------------------
-df_s1 |> plot_scenario(title = "Scenario 1")
-df_s2 |> plot_scenario(title = "Scenario 2")
-df_s3 |> plot_scenario(title = "Scenario 3")
+df_s1 |> plot_scenario(title = "Scenario 1") -> plot_1
+df_s2 |> plot_scenario(title = "Scenario 2") -> plot_2
+df_s3 |> plot_scenario(title = "Scenario 3") -> plot_3
 df_s4 |> plot_scenario(title = "Scenario 4")
 df_s5 |> plot_scenario(title = "Scenario 5")
 df_s6 |> plot_scenario(title = "Scenario 6")
@@ -66,6 +67,17 @@ df_s7 |> plot_scenario(title = "Scenario 7")
 df_s8 |> plot_scenario(title = "Scenario 8")
 df_s9 |> plot_scenario(title = "Scenario 9")
 df_s10|> plot_scenario(title = "Scenario 10")
+
+
+# TS plot for paper -------------------------------------------------------
+plot_1 /
+  plot_2 /
+  plot_3 +
+  labs(x = "Observation Index") +
+  plot_layout(guides = "collect")
+
+
+ggsave("figures/ts_plot_sim.pdf", width = 4000, height = 2000, units = "px")
 
 # Scenario 1 --------------------------------------------------------------
 hawkins_s1 <- hawkins_2008(df_s1, colMeans(df_s1[1:n, ]), cov(df_s1[1:n, ]))
