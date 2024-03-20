@@ -9,7 +9,7 @@ library("lubridate")
 library("here")
 library("forecast")
 library("MTS")
-library(magrittr)
+library("magrittr")
 source(here("scripts", "pl_fd_helper.R"))
 source(here("scripts", "pl_fd_methods.R"))
 

@@ -10,6 +10,21 @@ get_rl_oc <- function(vec_pstat, h) {
   ifelse(is.na(first_fault), length(vec_pstat), first_fault)
 }
 
+get_rl_oc2 <- function(vec_pstat1, vec_pstat2, h1, h2) {
+  first_fault1 <- which(vec_pstat1 > h1)[1]
+  first_fault2 <- which(vec_pstat2 > h2)[1]
+  first_fault <- min(first_fault1, first_fault2)
+  ifelse(is.na(first_fault), length(vec_pstat1), first_fault)
+}
+
+get_detection_rate <- function(vec_pstat, h) {
+  sum(vec_pstat > h)/length(vec_pstat)
+}
+
+get_detection_rate2 <- function(vec_pstat1, vec_pstat2, h1, h2) {
+  sum(vec_pstat1 > h1 | vec_pstat2 > h2)/length(vec_pstat1)
+}
+
 objective_function <- function(h, arl, vec_pstat) {
   abs(get_arl_ic(vec_pstat, h) - arl)
   #abs(get_rl_oc(vec_pstat, h) - arl)
@@ -20,6 +35,37 @@ estimate_h <- function(vec_pstat, arl) {
   h <- as.numeric(quantile(vec_pstat, 1 - 1/arl)) #MRL
   optim(h, objective_function, arl = arl, vec_pstat = vec_pstat, 
         method = "BFGS")$par
+}
+
+estimate_h_fd <- function(vec_pstat, alpha) {
+  quantile(vec_pstat, 1-alpha, na.rm = TRUE) |> as.numeric()
+}
+
+objective_function2 <- function(h, arl, vec_pstat1, vec_pstat2) {
+  h1 <- h[1]
+  h2 <- h[2]
+  
+  denom <- sum(vec_pstat1 > h1 | vec_pstat2 > h2)
+  numer <- length(vec_pstat1)
+  # list(estimate = ifelse(denom == 0, numer, numer/denom),
+  #      theoretical = arl)
+  abs(ifelse(denom == 0, numer, numer/denom) - arl)
+}
+
+estimate_h2 <- function(vec_pstat1, vec_pstat2, arl) {
+  vec_pstat1 <- vec_pstat1[which(!is.na(vec_pstat1))]
+  vec_pstat2 <- vec_pstat2[which(!is.na(vec_pstat2))]
+  h1 <- as.numeric(quantile(vec_pstat1, 1 - 1/arl)) #MRL
+  h2 <- as.numeric(quantile(vec_pstat2, 1 - 1/arl)) #MRL
+  h <- c(h1, h2)
+  optim(h, objective_function2, arl = arl,
+        vec_pstat1 = vec_pstat1, vec_pstat2 = vec_pstat2,
+        method = "BFGS")$par
+}
+
+estimate_h2_fd <- function(vec_pstat1, vec_pstat2, alpha) {
+  h <- c(quantile(vec_pstat1, 1-alpha/2, na.rm = TRUE) |> as.numeric(),
+         quantile(vec_pstat2, 1-alpha/2, na.rm = TRUE) |> as.numeric())
 }
 
 estimate_h_bootstrap <- function(vec_pstat, arl, B = 500) {
