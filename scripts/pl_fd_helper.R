@@ -169,7 +169,7 @@ mean_SPARSE <- function(mu_t, mu_0, sig_inv, fun, lambda_1 = 0.2) {
     })
 }
 
-cov_MEWMC <- function(dat, mu_lt, beta = .2) {
+cov_MEWMC <- function(dat, mu_lt, sigma_0, beta = .2) {
   X <- as.matrix(dat)
   mu_lt <- as.matrix(mu_lt)
   sigma_lt <- vector("list", nrow(dat))

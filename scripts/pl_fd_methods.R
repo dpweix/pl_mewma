@@ -28,7 +28,7 @@ wang_2014_1 <- function(dat, mu_0, sigma_0,
   sig_inv <- solve(sigma_0)
   mu_t  <- mean_MEWMA(X, mu_0, alpha = alpha)
   mu_lt <- mean_SPARSE(mu_t, mu_0, sig_inv, pl_mu_1, lambda_1 = lambda_1)
-  sigma_lt     <- cov_MEWMC(X, mu_lt, beta = beta)
+  sigma_lt     <- cov_MEWMC(X, mu_lt, sigma_0, beta = beta)
   sigma_hat_lt <- cov_SPARSE(sigma_lt, sigma_0, lambda = lambda_2)
   sigma_0t     <- cov_MEWMC_0(X, mu_0, sigma_0, beta = beta)
   
