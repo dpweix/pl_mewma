@@ -6,7 +6,10 @@ rho <- c(0, .2, .4, .6)
 #alpha <- c(0.05, 0.1, 0.2)
 #beta  <- alpha
 
-scenario_params <- list(#s1 = a,
+scenario_params <- list(s1 = a,
+                        s2 = b,
+                        s3 = rho,
+                        s4 = b,
                         s2 = b,
                         s3 = rho,
                         s4 = b,
@@ -41,20 +44,20 @@ method_params <- list(
 
 data_folder <- "data"
 
-methods <- "MAC_COMET"
-#methods <- c("hawkins", "wang_1", "wang_2")
-#methods <- c("wang_1", "wang_2", "MC_LASSO")
+#methods <- "MAC_COMET"
+#methods <- c("hawkins", "MC_COMET", "MAC_COMET")
+methods <- c("wang_1", "wang_2", "MC_LASSO")
 #selected_method <- method_params[[methods]]
 
 # Missing 
 # hawkins: s5, s6, s7: 101-1000 (DONE)
-# wang_1: s1-4 and s8-10: 201-1000, s5-7: 101-1000
-# wang_2: s1-10: 101-1000
-# MC_LASSO: s1-4 and s8-10: 201-1000, s5-7: 101-1000
+# wang_1: s1-4 and s8-10: 201-1000, s5-7: 101-1000 (RUNNING 201-1000)
+# wang_2: s1-10: 101-1000 (RUNNING 201-1000)
+# MC_LASSO: s1-4 and s8-10: 201-1000, s5-7: 101-1000 (RUNNING 201-1000)
 # MC_COMET: s5, s6, s7: 101-1000 (DONE)
 # MAC_COMET: s1-10: 101-1000 (RUNNING)
 
 n <- 1000
 arl_ic <- 180
-i_min <- 101
+i_min <- 201
 i_max <- 1000
