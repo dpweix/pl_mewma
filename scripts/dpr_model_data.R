@@ -71,7 +71,10 @@ vars_to_monitor <- c("TMP",
                      "O3-Gas Feed Concentration (mg/L)")
 
 
+df3_pre_fit <- df3_pre[, c(vars_to_monitor, "UF State")]
 
+df3_pre_fit |> 
+  mutate()
 
 # Modeling monitored variables --------------------------------------------
 # TMP
@@ -126,7 +129,7 @@ df3_centerscale$`UF-Current Draw (A)` |> mean()
 ggtime <- function(df) {
   df |> 
     pivot_longer(all_of(vars_to_monitor), names_transform = as_factor) |> 
-    ggplot(aes(Date_Time, value)) +
+    ggplot(aes(Date_Time, value, color = `UF State`)) +
     facet_wrap(~ name, ncol = 2, scales = "free")
 }
 
@@ -172,7 +175,7 @@ ggheat <- function(df, method = "Sample") {
     ggplot(aes(name, other_var, fill = value)) +
     geom_raster() +
     scale_y_discrete(limits = rev(vars_to_monitor)) + 
-    scale_fill_viridis_c(option = "plasma") + # if using correlation, limits = c(-1, 1)
+    scale_fill_viridis_c(option = "plasma", limits = c(-1, 1)) + # if using correlation, limits = c(-1, 1)
     theme(axis.text.x = element_text(angle = 45, hjust=1)) #+
     #labs(title = glue("{method} Covariance Heat Map"), x = "", y = "", fill = "")
 }
