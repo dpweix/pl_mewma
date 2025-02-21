@@ -268,8 +268,8 @@ gen_dat_s11 <- function(n, b, data_only = TRUE) {
 
 gen_dat_s12 <- function(n, rho, data_only = TRUE) {
   df <- 
-    bind_rows(IC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_2_20(b = 1, rho = rho_0)) |> format_matrix(),
-              OC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_2_20(b = 1, rho = rho))   |> format_matrix(),
+    bind_rows(IC = rmvnorm(n, mean = rep(0, 20), sigma = sigma_2_20(b = 1, rho = rho_0)) |> format_matrix(),
+              OC = rmvnorm(n, mean = rep(0, 20), sigma = sigma_2_20(b = 1, rho = rho))   |> format_matrix(),
               .id = "type") |> 
     mutate(index = 1:n(), .before = "x1")
   
