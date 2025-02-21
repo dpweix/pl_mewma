@@ -125,6 +125,7 @@ df_adr <- df_dr |>
   group_by(scenario, method, param) |> 
   summarize(`Mean Detection Rate` = round(mean(dr), 3),
             `Median Detection Rate` = median(dr),
+            `SE of Detection Rate` = sd(dr)/sqrt(i_max),
             ic_param = mean(ic_param)) |>
   ungroup()
 
@@ -150,8 +151,9 @@ ggsave(here("figures", "dr-results.pdf"), width = 4000, height = 2000, units = "
 
 # Detection rate table
 df_adr |> 
-  select(scenario, method, param, `Mean Detection Rate`) |> 
-  pivot_wider(names_from = method, values_from = `Mean Detection Rate`) |> 
+  mutate(value = paste0(`Mean Detection Rate`, " (", round(`SE of Detection Rate`, 1) ,")")) |> 
+  select(scenario, method, param, value) |> 
+  pivot_wider(names_from = method, values_from = value) |> 
   kbl(format = "latex", booktabs = TRUE, linesep =  c('', '', '', '\\addlinespace'))
 
 
