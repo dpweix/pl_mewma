@@ -6,19 +6,21 @@ rho <- c(0, .2, .4, .6)
 #alpha <- c(0.05, 0.1, 0.2)
 #beta  <- alpha
 
-scenario_params <- list(s1 = a,
-                        s2 = b,
-                        s3 = rho,
-                        s4 = b,
-                        s2 = b,
-                        s3 = rho,
-                        s4 = b,
-                        s5 = a,
-                        s6 = b,
-                        s7 = rho,
-                        s8 = rho,
-                        s9 = a,
-                        s10 = b)
+scenario_params <- list(#s1 = a,
+                        # s2 = b,
+                        # s3 = rho,
+                        # s4 = b,
+                        # s2 = b,
+                        # s3 = rho,
+                        # s4 = b,
+                        # s5 = a,
+                        # s6 = b,
+                        # s7 = rho,
+                        # s8 = rho,
+                        # s9 = a,
+                        # s10 = b,
+                        s11 = b,
+                        s12 = rho)
 
 method_params <- list(
   hawkins   = list(method = "hawkins",    beta = .1),
@@ -59,5 +61,5 @@ methods <- c("wang_1", "wang_2", "MC_LASSO")
 
 n <- 1000
 arl_ic <- 180
-i_min <- 201
-i_max <- 1000
+i_min <- 1
+i_max <- 10

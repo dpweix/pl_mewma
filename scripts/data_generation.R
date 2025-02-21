@@ -34,6 +34,24 @@ sigma_2 <- function(b = 1, rho = .2) {
            0, 0, 0, 0, 0, 0, 0, 0, 0, 1), ncol = 10, byrow = TRUE)
 }
 
+sigma_2_20 <- function(b = 1, rho = .2) { # for p = 20
+  n_b <- 8
+  n_1 <- 20-n_b
+  
+  Sigma_2_20 <- diag(c(rep(b, n_b), rep(1, n_1)))
+  
+  for(i in 1:n_b) {
+    for(j in 1:n_b) {
+      if(i != j) {
+        Sigma_2_20[i, j] = b*rho
+      }
+    }
+  }
+  
+  Sigma_2_20
+}
+
+
 # sigma_2 <- function(b = 1, rho = .2) {
 #   matrix(c(b, b*rho, b*rho, b*rho, 0, 0, 0, 0, 0, 0,
 #            b*rho, b, b*rho, b*rho, 0, 0, 0, 0, 0, 0,
@@ -234,6 +252,34 @@ gen_dat_s10 <- function(n, b, data_only = TRUE) {
   }
 }
 
+gen_dat_s11 <- function(n, b, data_only = TRUE) {
+  df <- 
+    bind_rows(IC = rmvnorm(n, mean = rep(0, 20), sigma = sigma_2_20(b = 1, rho = rho_0)) |> format_matrix(),
+              OC = rmvnorm(n, mean = rep(0, 20), sigma = sigma_2_20(b = b, rho = rho_0)) |> format_matrix(),
+              .id = "type") |> 
+    mutate(index = 1:n(), .before = "x1")
+  
+  if(data_only) {
+    df[, 3:22]
+  } else {
+    df
+  }
+}
+
+gen_dat_s12 <- function(n, rho, data_only = TRUE) {
+  df <- 
+    bind_rows(IC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_2_20(b = 1, rho = rho_0)) |> format_matrix(),
+              OC = rmvnorm(n, mean = rep(0, 10), sigma = sigma_2_20(b = 1, rho = rho))   |> format_matrix(),
+              .id = "type") |> 
+    mutate(index = 1:n(), .before = "x1")
+  
+  if(data_only) {
+    df[, 3:22]
+  } else {
+    df
+  }
+}
+
 gen_dat <- function(scenario, n, arg, data_only = TRUE) {
   if(scenario == "s1") gen_dat_s1(n, arg, data_only)
   else if(scenario == "s2") gen_dat_s2(n, arg, data_only)
@@ -245,4 +291,6 @@ gen_dat <- function(scenario, n, arg, data_only = TRUE) {
   else if(scenario == "s8") gen_dat_s8(n, arg, data_only)
   else if(scenario == "s9") gen_dat_s9(n, arg, data_only)
   else if(scenario == "s10") gen_dat_s10(n, arg, data_only)
+  else if(scenario == "s11") gen_dat_s11(n, arg, data_only)
+  else if(scenario == "s12") gen_dat_s12(n, arg, data_only)
 }
