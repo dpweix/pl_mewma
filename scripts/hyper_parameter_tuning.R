@@ -29,12 +29,10 @@ params <- expand_grid(n_w, cutoff)
 
 tuning_results <- generate_n_samples(10)
 
-summarize_tuning_results <- tuning_results |> 
+summarized_tuning_results <- tuning_results |> 
   summarize(across(c(s3, s7, s12), mean), .by = c(n_w, cutoff))
 
-tuning_results <- bind_cols(params, tuning_results)
-
-tuning_results |> 
+summarized_tuning_results |> 
   pivot_longer(s3:s12, names_transform = as.factor) |> 
   mutate(cutoff = as.factor(cutoff)) |> 
   ggplot(aes(n_w, value, color = cutoff)) +
@@ -43,6 +41,8 @@ tuning_results |>
   facet_wrap(~ name, scales = "free_y") +
   labs(y = "Frobenius Norm")
 
+# write_csv(tuning_results, "data/tuning_results.csv")
+# read_csv("data/tuning_results.csv")
 
 # Helper functions --------------------------------------------------------
 
@@ -90,6 +90,4 @@ generate_n_samples <- function(n) {
                }))
     })
 }
-
-
 
