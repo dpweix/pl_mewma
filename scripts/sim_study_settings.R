@@ -12,7 +12,9 @@ scenario_params <- list(s1 = a,
                         s7 = rho,
                         s8 = rho,
                         s9 = a,
-                        s10 = b)
+                        s10 = b,
+                        s11 = b,
+                        s12 = rho)
 
 method_params <- list(
   hawkins   = list(method = "hawkins",    beta = .1),
@@ -32,4 +34,4 @@ methods <- "wang_2"
 n <- 1000
 arl_ic <- 180
 i_min <- 1
-i_max <- 1000
+i_max <- 10

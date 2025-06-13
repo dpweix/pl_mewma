@@ -114,7 +114,8 @@ df_arl <- df_rl |>
                              .default = method) |> as_factor()) |>
   group_by(scenario, method, param) |> 
   summarize(ARL = round(mean(rl), 1),
-            MRL = median(rl)) |>
+            MRL = median(rl),
+            SE = sd(rl)/sqrt(i_max)) |>
   ungroup() |> 
   mutate(param_min = min(param), 
          arl_max = max(ARL), .by = scenario)
@@ -140,8 +141,9 @@ ggsave(here("figures", "arl-results.pdf"), width = 4000, height = 2000, units = 
 
 # ARL Table
 df_arl |> 
-  select(scenario, method, param, ARL) |> 
-  pivot_wider(names_from = method, values_from = ARL) |> 
+  mutate(value = paste0(ARL, " (", round(SE, 1) ,")")) |> 
+  select(scenario, method, param, value) |> 
+  pivot_wider(names_from = method, values_from = value) |> 
   kbl(format = "latex", booktabs = TRUE, linesep =  c('', '', '', '\\addlinespace'))
 
 
