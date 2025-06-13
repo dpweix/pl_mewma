@@ -30,6 +30,10 @@ objective_function <- function(h, arl, vec_pstat) {
   #abs(get_rl_oc(vec_pstat, h) - arl)
 }
 
+objective_function_fd <- function(h, alpha, vec_pstat) {
+  abs(sum(vec_pstat > h)/length(vec_pstat) - alpha)
+}
+
 estimate_h <- function(vec_pstat, arl) {
   vec_pstat <- vec_pstat[which(!is.na(vec_pstat))]
   h <- as.numeric(quantile(vec_pstat, 1 - 1/arl)) #MRL
@@ -38,7 +42,12 @@ estimate_h <- function(vec_pstat, arl) {
 }
 
 estimate_h_fd <- function(vec_pstat, alpha) {
-  quantile(vec_pstat, 1-alpha, na.rm = TRUE) |> as.numeric()
+  #quantile(vec_pstat, 1-alpha, na.rm = TRUE) |> as.numeric()
+  
+  vec_pstat <- vec_pstat[which(!is.na(vec_pstat))]
+  h <- as.numeric(quantile(vec_pstat, 1 - alpha)) # h for MRL
+  optim(h, objective_function_fd, alpha = alpha, vec_pstat = vec_pstat, 
+        method = "BFGS")$par
 }
 
 objective_function2 <- function(h, arl, vec_pstat1, vec_pstat2) {
@@ -50,6 +59,15 @@ objective_function2 <- function(h, arl, vec_pstat1, vec_pstat2) {
   # list(estimate = ifelse(denom == 0, numer, numer/denom),
   #      theoretical = arl)
   abs(ifelse(denom == 0, numer, numer/denom) - arl)
+}
+
+objective_function2_fd <- function(h, alpha, vec_pstat1, vec_pstat2) {
+  h1 <- h[1]
+  h2 <- h[2]
+  
+  numer <- sum(vec_pstat1 > h1 | vec_pstat2 > h2)
+  denom <- length(vec_pstat1)
+  abs(numer/denom - alpha)
 }
 
 estimate_h2 <- function(vec_pstat1, vec_pstat2, arl) {
@@ -64,8 +82,17 @@ estimate_h2 <- function(vec_pstat1, vec_pstat2, arl) {
 }
 
 estimate_h2_fd <- function(vec_pstat1, vec_pstat2, alpha) {
-  h <- c(quantile(vec_pstat1, 1-alpha/2, na.rm = TRUE) |> as.numeric(),
-         quantile(vec_pstat2, 1-alpha/2, na.rm = TRUE) |> as.numeric())
+  # h <- c(quantile(vec_pstat1, 1-alpha/2, na.rm = TRUE) |> as.numeric(),
+  #        quantile(vec_pstat2, 1-alpha/2, na.rm = TRUE) |> as.numeric())
+  
+  vec_pstat1 <- vec_pstat1[which(!is.na(vec_pstat1))]
+  vec_pstat2 <- vec_pstat2[which(!is.na(vec_pstat2))]
+  h1 <- as.numeric(quantile(vec_pstat1, 1 - alpha/2)) #MRL
+  h2 <- as.numeric(quantile(vec_pstat2, 1 - alpha/2)) #MRL
+  h <- c(h1, h2)
+  optim(h, objective_function2_fd, alpha = alpha,
+        vec_pstat1 = vec_pstat1, vec_pstat2 = vec_pstat2,
+        method = "BFGS")$par
 }
 
 estimate_h_bootstrap <- function(vec_pstat, arl, B = 500) {

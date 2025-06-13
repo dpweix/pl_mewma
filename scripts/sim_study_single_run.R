@@ -103,49 +103,6 @@ if(method == "hawkins") {
   T_1 <- pstat$T_1
   T_2 <- pstat$T_2
 } 
-# else if(method == "test_4") {
-#   mu_0    <- colMeans(df[1:n, ])
-#   S_0 <- cov(df[1:n, ])
-#   S_0[(abs(S_0) < selected_method$cutoff)] <- 0
-#   sigma_0 <- covchaud(S_0, as.matrix(df[1:n, ]))$mat
-#   window_upper_limit <- estimate_h(
-#     apply(as.matrix(df[1:n, ])-mu_0, MARGIN = 1, FUN = \(x) t(x) %*% sigma_0 %*% x),
-#     200)
-#   
-#   pstat <- test_method_4(df, mu_0, sigma_0, window_upper_limit,
-#                          alpha = selected_method$alpha,
-#                          beta = selected_method$beta,
-#                          cutoff = selected_method$cutoff,
-#                          n_min = selected_method$n_min,
-#                          n_max = selected_method$n_max)
-#   T_1 <- pstat$T_1
-#   T_2 <- pstat$T_2
-# } else if(method == "test_5") {
-#   mu_0    <- colMeans(df[1:n, ])
-#   S_0 <- cov(df[1:n, ])
-#   S_0[(abs(S_0) < selected_method$cutoff)] <- 0
-#   sigma_0 <- covchaud(S_0, as.matrix(df[1:n, ]))$mat
-#   A <- get_A(sigma_0)
-#   X <- as.matrix(df[1:n, ])
-#   p <- ncol(X)
-#   mu_t  <- mean_MEWMA(X, mu_0, alpha = selected_method$alpha)
-#   U <- calc_U(df[1:n, ], mu_t, A)
-#   S <- calc_S(U, sigma_0, selected_method$beta)
-#   sigma_S_0 <- cov(matrix(map(S, ks::vech) |> unlist(), ncol = p*(p-1), byrow = TRUE))
-#   
-#   window_upper_limit <- estimate_h(
-#     map_dbl(S, \(S) {t(ks::vech(sigma_0)) %*% sigma_S_0 %*% ks::vech(S)}),
-#     200)
-#   
-#   pstat <- test_method_5(df, mu_0, sigma_0, window_upper_limit,
-#                          alpha = selected_method$alpha,
-#                          beta = selected_method$beta,
-#                          cutoff = selected_method$cutoff,
-#                          n_min = selected_method$n_min,
-#                          n_max = selected_method$n_max)
-#   T_1 <- pstat$T_1
-#   T_2 <- pstat$T_2
-# }
 
 # Save results -------------------------------------------------------------
 if(method %in% c("hawkins", "wang_1", "MC_LASSO", "MC_COMET")) {

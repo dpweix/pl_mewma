@@ -21,6 +21,16 @@ scenario_labels <- c("s1" = "Scenario 1, a",
                      "s9" = "Scenario 9, a",
                      "s10" = "Scenario 10, b") |> as_labeller()
 
+scenario_labels <- c("s1" = "S1: Mean Shift",
+                     "s2" = "S2: Variance Shift",
+                     "s3" = "S3: Var/Cov Shift",
+                     "s4" = "S4: Covariance Shift",
+                     "s5" = "S5: Mean Shift",
+                     "s6" = "S6: Var/Cov Shift",
+                     "s7" = "S7: Covariance Shift",
+                     "s8" = "S8: Covariance Shift",
+                     "s9" = "S9: Mean Shift",
+                     "s10"="S10: Var/Cov Shift") |> as_labeller()
 # Load pstats -------------------------------------------------------------
 source(here("scripts", "sim_study_settings.R"))
 source(here("scripts", "pl_fd_methods.R"))
@@ -54,11 +64,13 @@ df_dr <-
         result_3 <- read_rds(file_names[[3]])
         result_4 <- read_rds(file_names[[4]])
         
+        alpha_0 <- .005
+        
         if(m %in% c("hawkins", "wang_1", "MC_LASSO", "MC_COMET")) {
-          h_param1 <- estimate_h_fd(result_1$pstat[1:1000], .005)
-          h_param2 <- estimate_h_fd(result_2$pstat[1:1000], .005)
-          h_param3 <- estimate_h_fd(result_3$pstat[1:1000], .005)
-          h_param4 <- estimate_h_fd(result_4$pstat[1:1000], .005)
+          h_param1 <- estimate_h_fd(result_1$pstat[1:1000], alpha_0)
+          h_param2 <- estimate_h_fd(result_2$pstat[1:1000], alpha_0)
+          h_param3 <- estimate_h_fd(result_3$pstat[1:1000], alpha_0)
+          h_param4 <- estimate_h_fd(result_4$pstat[1:1000], alpha_0)
           
           tibble(index = i,
                  method = m,
@@ -70,10 +82,10 @@ df_dr <-
                         get_detection_rate(result_4$pstat[1001:2000], h_param4)))
           
         } else if(m %in% c("wang_2", "MAC_COMET", "MAC_COMET1")) {
-          h_param1 <- estimate_h2_fd(result_1$pstat$T_1[1:1000], result_1$pstat$T_2[1:1000], .005)
-          h_param2 <- estimate_h2_fd(result_2$pstat$T_1[1:1000], result_2$pstat$T_2[1:1000], .005)
-          h_param3 <- estimate_h2_fd(result_3$pstat$T_1[1:1000], result_3$pstat$T_2[1:1000], .005)
-          h_param4 <- estimate_h2_fd(result_4$pstat$T_1[1:1000], result_4$pstat$T_2[1:1000], .005)
+          h_param1 <- estimate_h2_fd(result_1$pstat$T_1[1:1000], result_1$pstat$T_2[1:1000], alpha_0)
+          h_param2 <- estimate_h2_fd(result_2$pstat$T_1[1:1000], result_2$pstat$T_2[1:1000], alpha_0)
+          h_param3 <- estimate_h2_fd(result_3$pstat$T_1[1:1000], result_3$pstat$T_2[1:1000], alpha_0)
+          h_param4 <- estimate_h2_fd(result_4$pstat$T_1[1:1000], result_4$pstat$T_2[1:1000], alpha_0)
           
           tibble(index = i,
                  method = m,
@@ -97,14 +109,20 @@ df_dr <-
     })
   })
 
-df_dr
+# Swap s3 and s4
+df_dr$scenario <- as_factor(df_dr$scenario)
+loc_s3 <- which(df_dr$scenario == "s3")
+loc_s4 <- which(df_dr$scenario == "s4")
+
+df_dr$scenario[loc_s3] <- "s4"
+df_dr$scenario[loc_s4] <- "s3"
 
 get_ic_param <- function(scenario = "s1") {
   if(scenario %in% c("s1", "s5", "s9")) {
     return(0)
-  } else if(scenario %in% c("s2", "s4", "s6", "s10")) {
+  } else if(scenario %in% c("s2", "s3", "s6", "s10")) {
     return(1)
-  } else if(scenario %in% c("s3", "s7", "s8")) {
+  } else if(scenario %in% c("s4", "s7", "s8")) {
     return(0.2)
   }
   NA
@@ -113,8 +131,7 @@ get_ic_param <- function(scenario = "s1") {
 # Estimate average run lengths
 df_adr <- df_dr |> 
   mutate(ic_param = map_dbl(scenario, get_ic_param)) |> 
-  mutate(scenario = as_factor(scenario),
-         method = case_match(method,
+  mutate(method = case_match(method,
                              "MC_LASSO" ~ "MC-LASSO", 
                              "MC_COMET" ~ "MC-COMET",
                              "MAC_COMET" ~ "MAC-COMET",
@@ -125,6 +142,7 @@ df_adr <- df_dr |>
   group_by(scenario, method, param) |> 
   summarize(`Mean Detection Rate` = round(mean(dr), 3),
             `Median Detection Rate` = median(dr),
+            SE = round(sd(dr)/sqrt(i_max), 5),
             ic_param = mean(ic_param)) |>
   ungroup()
 
@@ -141,19 +159,25 @@ df_adr |>
   geom_point(shape = 21) +
   geom_line() +
   facet_wrap(~ scenario, scales = "free", nrow = 2, ncol = 5, labeller = scenario_labels) +
-  scale_x_continuous(n.breaks = 6) +
+  scale_x_continuous(n.breaks = 4) +
   scale_y_continuous(limits = c(0, 1)) +
   labs(color = "", linetype = "", x = "", title = "Mean Detection Rate by Scenario, Method, and Parameter")
 
-ggsave(here("figures", "dr-results.pdf"), width = 4000, height = 2000, units = "px", device = cairo_pdf)
+ggsave(here("figures", "dr_results.pdf"), width = 4000, height = 2000, units = "px", device = cairo_pdf)
 
 
 # Detection rate table
 df_adr |> 
+  mutate(`Mean Detection Rate` = paste0(`Mean Detection Rate`, " (", SE, ")")) |> 
   select(scenario, method, param, `Mean Detection Rate`) |> 
   pivot_wider(names_from = method, values_from = `Mean Detection Rate`) |> 
   kbl(format = "latex", booktabs = TRUE, linesep =  c('', '', '', '\\addlinespace'))
 
+df_adr |> 
+  mutate(value = paste0(`Mean Detection Rate`, " (", round(`SE of Detection Rate`, 4), ")")) |> 
+  select(scenario, method, param, value) |> 
+  pivot_wider(names_from = method, values_from = value) |> 
+  kbl(format = "latex", booktabs = TRUE, linesep = c('', '', '', '\\addlinespace'))
 
 # RL Histograms
 scenario_n <- "s3"
